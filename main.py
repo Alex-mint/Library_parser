@@ -9,11 +9,11 @@ def check_for_redirect(response):
         raise requests.exceptions.HTTPError
 
 
-def download_txt(url, filename, folder='books/'):
+def download_txt(url, filename, book_id, folder='books/'):
     filename = sanitize_filename(filename)
     response = requests.get(url)
     response.raise_for_status()
-    with open(f"{folder}/{filename}.tex", "wb") as file:
+    with open(f"{folder}/{book_id}. {filename}.tex", "wb") as file:
         file.write(response.content)
 
 
@@ -41,7 +41,7 @@ def main():
         except requests.exceptions.HTTPError:
             continue
         filename = get_book_title(library_url, book_id)
-        download_txt(txt_url, filename)
+        download_txt(txt_url, filename, book_id)
         book_id += 1
 
 
