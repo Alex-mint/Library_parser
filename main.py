@@ -33,6 +33,7 @@ def download_image(url=12, filename=12, book_id=12, folder='images/'):
 def parse_book_page(library_url, book_id):
     url = f'{library_url}b{book_id}/'
     comments = []
+    genres = []
     response = requests.get(url)
     response.raise_for_status()
     soup = BeautifulSoup(response.text, 'lxml')
@@ -42,7 +43,11 @@ def parse_book_page(library_url, book_id):
     crude_comments = soup.find_all('div', class_='texts')
     for comment in crude_comments:
         comments.append(comment.find('span', class_='black').text)
+    crude_genres = soup.find('span', class_='d_book').find_all('a')
+    for genre in crude_genres:
+        genres.append(genre.text)
     print(comments)
+    print(genres)
     return title.strip(), image_url
 
 
