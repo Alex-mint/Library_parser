@@ -1,10 +1,19 @@
 import requests
 import os
+import sys
+import argparse
 
 from bs4 import BeautifulSoup
 from pathvalidate import sanitize_filename
 from urllib.parse import urljoin
 from urllib import parse
+
+
+def create_parser():
+    parser = argparse.ArgumentParser(description='Параметры запуска скрипта')
+    parser.add_argument('--start_page', default=1, type=int)
+    parser.add_argument('--end_page', default=766, type=int)
+    return parser
 
 
 def check_for_redirect(response):
@@ -20,7 +29,7 @@ def download_txt(url, filename, book_id, folder='books/'):
         file.write(response.content)
 
 
-def download_image(url=12, filename=12, book_id=12, folder='images/'):
+def download_image(url, filename, book_id, folder='images/'):
     unquoted_url = parse.unquote(url)
     path = parse.urlparse(unquoted_url).path
     extension = os.path.splitext(path)[-1]
@@ -46,30 +55,32 @@ def parse_book_page(library_url, book_id):
     crude_genres = soup.find('span', class_='d_book').find_all('a')
     for genre in crude_genres:
         genres.append(genre.text)
-    print(comments)
-    print(genres)
-    return title.strip(), image_url
+    return title.strip(), image_url, comments, genres
 
 
 def main():
-    books_quantity = 10
+    parser = create_parser()
+    args = parser.parse_args()
     txt_path = 'books'
     images_path = 'images'
     library_url = 'https://tululu.org/'
+
     os.makedirs(txt_path, exist_ok=True)
     os.makedirs(images_path, exist_ok=True)
-    for book_id in range(1, books_quantity+1):
+
+    for book_id in range(args.start_page, args.end_page+1):
         payload = {'id': book_id}
         response = requests.get(f'{library_url}txt.php', params=payload)
         response.raise_for_status()
         txt_url = response.url
         try:
             check_for_redirect(response)
+            filename, image_url, comments, genres = parse_book_page(
+                library_url, book_id)
+            download_txt(txt_url, filename, book_id)
+            download_image(image_url, filename, book_id)
         except requests.exceptions.HTTPError:
             continue
-        filename, image_url = parse_book_page(library_url, book_id)
-        download_txt(txt_url, filename, book_id)
-        download_image(image_url, filename, book_id)
         book_id += 1
 
 
