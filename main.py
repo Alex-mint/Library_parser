@@ -25,8 +25,8 @@ def download_txt(url, filename, book_id, folder='books/'):
     filename = sanitize_filename(filename)
     response = requests.get(url)
     response.raise_for_status()
-    with open(f"{folder}/{book_id}. {filename}.tex", "wb") as file:
-        file.write(response.content)
+    with open(f"{folder}/{book_id}. {filename}.txt", "w") as file:
+        file.write(response.text)
 
 
 def download_image(url, filename, book_id, folder='images/'):
