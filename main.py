@@ -11,8 +11,8 @@ from urllib import parse
 
 def create_parser():
     books_parser = argparse.ArgumentParser(description='Параметры запуска скрипта')
-    books_parser.add_argument('--start_page', default=1, type=int)
-    books_parser.add_argument('--end_page', default=766, type=int)
+    books_parser.add_argument('--start_id', default=1, type=int)
+    books_parser.add_argument('--end_id', default=766, type=int)
     return books_parser
 
 
@@ -71,7 +71,7 @@ def main():
     os.makedirs(txt_folder, exist_ok=True)
     os.makedirs(images_folder, exist_ok=True)
 
-    for book_id in range(args.start_page, args.end_page + 1):
+    for book_id in range(args.start_id, args.end_id + 1):
         payload = {'id': book_id}
         response = requests.get(f'{library_url}txt.php', params=payload)
         response.raise_for_status()
