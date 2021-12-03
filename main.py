@@ -10,10 +10,10 @@ from urllib import parse
 
 
 def create_parser():
-    parser = argparse.ArgumentParser(description='Параметры запуска скрипта')
-    parser.add_argument('--start_page', default=1, type=int)
-    parser.add_argument('--end_page', default=766, type=int)
-    return parser
+    books_parser = argparse.ArgumentParser(description='Параметры запуска скрипта')
+    books_parser.add_argument('--start_page', default=1, type=int)
+    books_parser.add_argument('--end_page', default=766, type=int)
+    return books_parser
 
 
 def check_for_redirect(response):
@@ -62,8 +62,8 @@ def parse_book_page(library_url, book_id):
 
 
 def main():
-    parser = create_parser()
-    args = parser.parse_args()
+    books_parser = create_parser()
+    args = books_parser.parse_args()
     txt_folder = 'books'
     images_folder = 'images'
     library_url = 'https://tululu.org/'
