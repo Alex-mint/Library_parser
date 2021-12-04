@@ -1,6 +1,5 @@
 import requests
 import os
-import sys
 import argparse
 
 from bs4 import BeautifulSoup
@@ -21,7 +20,11 @@ def check_for_redirect(response):
         raise requests.exceptions.HTTPError
 
 
-def download_txt(response, filename, book_id, folder='books/'):
+def download_txt(library_url, filename, book_id, folder='books/'):
+    payload = {'id': book_id}
+    response = requests.get(f'{library_url}txt.php', params=payload)
+    check_for_redirect(response)
+    response.raise_for_status()
     filename = sanitize_filename(filename)
     with open(f"{folder}/{book_id}. {filename}.txt", "w",
               encoding='utf8') as file:
@@ -42,6 +45,7 @@ def download_image(url, filename, book_id, folder='images/'):
 def parse_book_page(library_url, book_id):
     url = f'{library_url}b{book_id}/'
     response = requests.get(url)
+    check_for_redirect(response)
     response.raise_for_status()
     soup = BeautifulSoup(response.text, 'lxml')
     title, author = soup.find('h1').text.split('::')
@@ -72,14 +76,9 @@ def main():
     os.makedirs(images_folder, exist_ok=True)
 
     for book_id in range(args.start_id, args.end_id + 1):
-        payload = {'id': book_id}
-        response = requests.get(f'{library_url}txt.php', params=payload)
-        response.raise_for_status()
         try:
-            check_for_redirect(response)
-            book_attributes = parse_book_page(
-                library_url, book_id)
-            download_txt(response, book_attributes['filename'], book_id)
+            book_attributes = parse_book_page(library_url, book_id)
+            download_txt(library_url, book_attributes['filename'], book_id)
             download_image(book_attributes['image_url'],
                            book_attributes['filename'], book_id)
         except requests.exceptions.HTTPError:
