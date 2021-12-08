@@ -50,12 +50,11 @@ def parse_book_page(book_url):
     check_for_redirect(response)
     response.raise_for_status()
     soup = BeautifulSoup(response.text, 'lxml')
-    title, author = soup.find('h1').text.split('::')
-    chopped_image_url = soup.find('div', class_='bookimage').find('img')['src']
-    crude_comments = soup.find_all('div', class_='texts')
-    comments = [comment.find('span', class_='black').text for comment in
-                crude_comments]
-    crude_genres = soup.find('span', class_='d_book').find_all('a')
+    title, author = soup.select_one('h1').text.split('::')
+    chopped_image_url = soup.select_one('.bookimage img')['src']
+    crude_comments = soup.select('.texts .black')
+    comments = [comment.text for comment in crude_comments]
+    crude_genres = soup.select('span.d_book a')
     genres = [genre.text for genre in crude_genres]
     book_attributes = {
         'filename': title.strip(),
@@ -70,6 +69,7 @@ def main():
     books_parser = create_parser()
     args = books_parser.parse_args()
     library_url = 'https://tululu.org/'
+    print('stary')
 
     for book_id in range(args.start_id, args.end_id + 1):
         book_url = f'{library_url}b{book_id}/'

@@ -18,9 +18,11 @@ def get_book_urls(page_url, library_url):
     response = requests.get(page_url)
     response.raise_for_status()
     soup = BeautifulSoup(response.text, 'lxml')
-    crude_book_urls = soup.find('td', class_='ow_px_td').find_all('table',
-                                                                   class_='d_book')
-    book_urls = [urljoin(library_url, url.find('a')['href']) for url in crude_book_urls]
+    crude_book_urls = soup.select('.ow_px_td .d_book')
+    book_urls = [urljoin(library_url, url.select_one('a')['href']) for url in crude_book_urls]
+
+    print(crude_book_urls)
+    print(book_urls)
     return book_urls
 
 
@@ -41,7 +43,7 @@ def download_book_attributes(library_url, book_urls):
 def main():
     library_url = 'https://tululu.org/'
     book_attributes = []
-    for page in range(1, 3):
+    for page in range(1, 2):
         page_url = f'{library_url}l55/{page}/'
         if page == 1:
             page_url = f'{library_url}l55/'
