@@ -1,6 +1,6 @@
 # Парсер книг
 
-Парсер скачивает книги с сайта [tululu.org](http://tululu.org/).
+Парсер скачивает с сайта [tululu.org](http://tululu.org/) книги научной фантастики с обложками, названиями и информацией.
 
 ### Как установить
 
@@ -14,16 +14,23 @@ pip install -r requirements.txt
 
 Для запуска программы необходимо написать в терминале следующее:
 ```commandline
-python3 main.py
+python3 parse_tululu_category.py
 ```
 
-Также у скрипта есть два необязательных аргумента:
-- `--start_id`, id книги с которой начинается скачивание, по умолчанию 1
-- `--end_id`, id книги на которой заканчивается скачивание, по умолчанию 766.
-
-### Пример ввода
+Также у скрипта есть два необязательны аргумента:
+- ```--start_page``` Начальная страница книг для загрузки default=1.
+- ```--end_page``` Конечная страница книг для загрузки, по умолчанию все страницы категории.
+- ```--dest_folder``` Путь к каталогу с результатами парсинга: картинкам, книгам, JSON, default='downloads'.
+- ```--json_path``` Путь к *.json файлу с результатами, default='downloads'.
+- ```--skip_imgs``` Не скачивать обложки книг, default=False.
+- ```--skip_txt``` Не скачивать содержимое книг, default=False.
+### Примеры ввода
 
 ```commandline
-python3 main.py --start_id 10 --end_id 87
+python3 parse_tululu_category.py --start_page 700 --end_page 701
+python3 parse_tululu_category.py --start_page 700
+python3 parse_tululu_category.py --start_page 1 --dest_folder folder_name
+python3 parse_tululu_category.py --start_page 1 --skip_txt
+python3 parse_tululu_category.py --start_page 1 --skip_imgs
+python3 parse_tululu_category.py --start_page 1 --json_path folder_name
 ```
-Скачаются книги начиная с id 10 по id 87
