@@ -25,25 +25,6 @@ def get_book_urls(page_url, library_url):
     return book_urls
 
 
-def download_book_attributes(library_url, book_urls, books_folder,
-                             images_folder, skip_imgs, skip_txt):
-    all_book_attributes = []
-    for book_url in book_urls:
-        try:
-            book_id = book_url.split('/')[-2].replace('b', '')
-            book_attributes = parse_book_page(book_url)
-            if not skip_imgs:
-                download_image(book_attributes['image_url'], library_url,
-                               images_folder)
-            if not skip_txt:
-                download_txt(library_url, book_attributes['filename'], book_id,
-                             books_folder)
-        except requests.exceptions.HTTPError:
-            continue
-        all_book_attributes.append(book_attributes)
-    return all_book_attributes
-
-
 def get_last_page():
     url = 'https://tululu.org/l55/'
     response = requests.get(url)
@@ -132,8 +113,6 @@ def main():
 
     for page in range(args.start_page, args.end_page):
         page_url = f'{library_url}l55/{page}/'
-        if page == 1:
-            page_url = 'https://tululu.org/l55/1/'
         book_urls = get_book_urls(page_url, library_url)
         all_book_attributes = []
         for book_url in book_urls:
